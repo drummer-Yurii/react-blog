@@ -342,18 +342,18 @@ $lightGreen: #69e7e7;
             justify-content: space-between;
 
             :first-child {
-                cursor: pointer;
-                color: teal;
-                background-color: white;
-                border: 1px solid teal;
-                padding: 3px 5px;
+              cursor: pointer;
+              color: teal;
+              background-color: white;
+              border: 1px solid teal;
+              padding: 3px 5px;
             }
             :last-child {
-                cursor: pointer;
-                color: white;
-                background-color: teal;
-                border: 1px solid teal;
-                padding: 3px 5px;
+              cursor: pointer;
+              color: white;
+              background-color: teal;
+              border: 1px solid teal;
+              padding: 3px 5px;
             }
           }
           .cat {
