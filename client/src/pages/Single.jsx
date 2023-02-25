@@ -1,62 +1,64 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Edit from '../img/edit.png';
 import Delete from '../img/delete.png';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Menu from '../components/Menu';
+import axios from 'axios';
+import moment from 'moment';
+import { AuthContext } from '../context/authContext';
 
 const Single = () => {
+  const [post, setPost] = useState({});
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const postId = location.pathname.split('/')[2];
+
+  const { currentUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`/posts/${postId}`);
+        setPost(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [postId]);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/posts/${postId}`);
+      navigate("/")
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div className="single">
       <div className="content">
-        <img
-          src="https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt=""
-        />
+        <img src={post?.img} alt="" />
         <div className="user">
-          <img
-            src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt=""
-          />
+          {post.userImg && <img src={post.userImg} alt="" />}
           <div className="info">
-            <span>John</span>
-            <p>Posted 2 days ago</p>
+            <span>{post.username}</span>
+            <p>Posted {moment(post.date).fromNow()}</p>
           </div>
-          <div className="edit">
-            <Link to={`/write?edit=2`}>
-              <img src={Edit} alt="" />
-            </Link>
-            <img src={Delete} alt="" />
-          </div>
+          {currentUser.username === post.username && (
+            <div className="edit">
+              <Link to={`/write?edit=2`}>
+                <img src={Edit} alt="" />
+              </Link>
+              <img onClick={handleDelete} src={Delete} alt="" />
+            </div>
+          )}
         </div>
-        <h1>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        </h1>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa hic officiis voluptatibus
-          molestias. Aspernatur necessitatibus nobis dolor atque, expedita optio?
-          <br /> <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa hic officiis voluptatibus
-          molestias. Aspernatur necessitatibus nobis dolor atque, expedita optio?
-          <br /> <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci accusamus nam eligendi
-          incidunt cupiditate minima nisi a corrupti labore, totam fuga ex veritatis obcaecati amet,
-          veniam molestiae minus libero. Dolor, eveniet quibusdam placeat consequatur in suscipit,
-          harum quisquam id repellat mollitia, officiis necessitatibus minima quia amet tenetur
-          soluta quod incidunt!
-          <br /><br />
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod doloribus et sapiente quo
-            asperiores iste odit exercitationem earum accusantium quae quas corporis voluptatum, ab
-            iusto sunt repellendus excepturi, quisquam quidem vero necessitatibus. Natus animi
-            doloribus, nemo odio itaque, mollitia voluptatem iure fugiat facilis temporibus quidem.
-            Odio temporibus, doloremque veritatis cum blanditiis modi adipisci error, nostrum
-            commodi quaerat quod? Illum perspiciatis, praesentium iste velit, possimus repudiandae
-            dolor eveniet expedita esse minima maxime eius exercitationem necessitatibus. Iste
-            libero aliquam odio consectetur. Magni recusandae ad non minima quam a, laudantium unde
-            aut. Asperiores commodi iure, blanditiis illum exercitationem molestias cupiditate
-            impedit cum porro.
-          </p>
-        </p>
+        <h1>{post.title}</h1>
+        {post.desc}
       </div>
       <Menu />
     </div>
